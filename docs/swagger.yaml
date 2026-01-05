@@ -1,0 +1,253 @@
+basePath: /api/v1
+definitions:
+  domain.ErrorResponse:
+    properties:
+      details:
+        description: (Опционально) Детали
+        example: email is required
+        type: string
+      error:
+        description: Краткий код или сообщение
+        example: invalid input
+        type: string
+    type: object
+  domain.Subscription:
+    properties:
+      end_date:
+        description: Дата окончания
+        type: string
+      price:
+        description: Цена в рублях
+        type: integer
+      service_name:
+        description: Название сервиса
+        type: string
+      start_date:
+        description: Дата начала
+        type: string
+      user_id:
+        description: UUID пользователя
+        type: string
+    type: object
+  handlers.createSubInput:
+    properties:
+      price:
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    required:
+    - price
+    - service_name
+    - start_date
+    - user_id
+    type: object
+  handlers.updateSubInput:
+    properties:
+      end_date:
+        type: string
+      price:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для управления подписками пользователей
+  title: Subscription CRUD API
+  version: "1.0"
+paths:
+  /subscriptions:
+    get:
+      description: Получить список всех подписок пользователя
+      parameters:
+      - description: UUID пользователя
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Subscription'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Получение списка подписок
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      description: Создать новую подписку
+      parameters:
+      - description: Данные подписки
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.createSubInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: ID подписки
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Неверное тело запроса
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Создание подписки
+      tags:
+      - subscriptions
+  /subscriptions/{id}:
+    delete:
+      description: Удалить подписку по ID
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Подписка успешно удалена
+        "404":
+          description: Подписка не найдена
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Удаление подписки
+      tags:
+      - subscriptions
+    get:
+      description: Получить информацию о подписке по её ID
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Subscription'
+        "404":
+          description: Подписка не найдена
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Получение подписки
+      tags:
+      - subscriptions
+    patch:
+      consumes:
+      - application/json
+      description: Обновить цену или дату окончания подписки
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Данные для обновления
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.updateSubInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Статус и сообщение
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Неверные данные
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: Подписка не найдена
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Обновление данных подписки
+      tags:
+      - subscriptions
+  /subscriptions/total-cost:
+    get:
+      description: Получить суммарную стоимость подписок за выбранный период с фильтрацией
+        по user_id и названию подписки
+      parameters:
+      - description: UUID пользователя
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: Название подписки
+        in: query
+        name: service_name
+        type: string
+      - description: Начальная дата (формат MM-YYYY)
+        in: query
+        name: start_date
+        required: true
+        type: string
+      - description: Конечная дата (формат MM-YYYY)
+        in: query
+        name: end_date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Суммарная стоимость
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Неверные параметры
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Подсчитать суммарную стоимость подписок
+      tags:
+      - subscriptions
+swagger: "2.0"

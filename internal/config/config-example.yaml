@@ -1,0 +1,16 @@
+env: "prod"
+
+server:
+  server_addr: ":8080"
+  server_mode: "release"
+  read_timeout: "10s"
+  write_timeout: "10s"
+  idle_timeout: "60s"
+  shutdown_context_value: "5s"
+
+postgre:
+  url: "postgres://postgres:postgres@subscription-postgres:5434/subscription_db?sslmode=disable"
+  pool_max: 20
+  retry_attempts: 5
+  retry_delay: "2s"
+  context_timeout_value: "5s"
