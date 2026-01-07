@@ -1,16 +1,15 @@
-env: "prod"
+env: "mode" # Режим работы сервера: local, dev, prod
 
 server:
-  server_addr: ":8080"
-  server_mode: "release"
-  read_timeout: "10s"
-  write_timeout: "10s"
-  idle_timeout: "60s"
-  shutdown_context_value: "5s"
+  server_port: ":port" # Порт сервера
+  server_mode: "mode" # Режим сервера: release, debug
+  read_timeout: "10s" # Таймаут чтения
+  write_timeout: "10s" # Таймаут записи
+  idle_timeout: "60s" # Таймаут бездействия
+  shutdown_context_value: "5s" # Таймаут остановки при graceful shutdown
 
 postgre:
-  url: "postgres://postgres:postgres@subscription-postgres:5434/subscription_db?sslmode=disable"
-  pool_max: 20
-  retry_attempts: 5
-  retry_delay: "2s"
-  context_timeout_value: "5s"
+  pool_max: 20 # Максимальное количество подключений в пуле
+  retry_attempts: 5 # Количество попыток подключения
+  retry_delay: "2s" # Задержка между попытками подключения
+  context_timeout_value: "5s" # Таймаут контекста подключения

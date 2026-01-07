@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -30,6 +31,8 @@ func Run() error {
 	// Инициализируем логгер
 	log := logger.New(cfg.Env)
 	slog.SetDefault(log)
+
+	log.Info("URL Database", slog.String("url", cfg.Postgre.URL))
 
 	// Подключаем базу данных
 	pgCfg := db.Config{
@@ -77,7 +80,7 @@ func Run() error {
 
 	// Конфигурация HTTP сервера
 	srv := &http.Server{
-		Addr:         cfg.Server.ServerPort,
+		Addr:         net.JoinHostPort("", cfg.Server.ServerPort),
 		Handler:      router,
 		ReadTimeout:  cfg.Server.ReadTimeout,
 		WriteTimeout: cfg.Server.WriteTimeout,

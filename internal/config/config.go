@@ -27,7 +27,7 @@ type ServerConfig struct {
 
 // Конфигурация базы данных
 type PostgreConfig struct {
-	URL                 string        `yaml:"url" env:"POSTGRES_URL" env-required:"true"`
+	URL                 string        `env:"POSTGRES_URL" env-required:"true"`
 	PoolMax             int           `yaml:"pool_max" env:"POSTGRES_POOL_MAX" env-default:"10"`
 	RetryAttempts       int           `yaml:"retry_attempts" env:"POSTGRES_RETRY_ATTEMPTS" env-default:"5"`
 	RetryDelay          time.Duration `yaml:"retry_delay" env:"POSTGRES_RETRY_DELAY" env-default:"2s"`

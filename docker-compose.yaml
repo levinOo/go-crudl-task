@@ -7,9 +7,11 @@ services:
     ports:
       - "${APP_PORT}:${APP_PORT}" 
     environment:
-      - CONFIG_PATH=/root/config-docker.yaml
+      - CONFIG_PATH=/root/config.yaml
+      - APP_PORT=${APP_PORT}
+      - POSTGRES_URL=${POSTGRES_URL}
     volumes:
-      - ./internal/config/config-docker.yaml:/root/config-docker.yaml
+      - ./internal/config/config.yaml:/root/config.yaml
     depends_on:
       db:
         condition: service_healthy
